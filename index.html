@@ -239,7 +239,7 @@ footer{margin-top:28px;color:var(--muted);font-size:12.5px;text-align:center}
 <div id="toasts" aria-live="polite"></div>
 <div id="sheet"></div>
 <script>
-"use strict";
+(function(){"use strict";
 /* ================= DATOS ================= */
 const HALF=40;
 const CLUBS=[
@@ -659,7 +659,8 @@ const A={
 };
 document.addEventListener("click",ev=>{const el=ev.target.closest("[data-a]");if(!el||el.disabled)return;const f=A[el.dataset.a];if(f)f(el.dataset,ev)});
 document.addEventListener("keydown",ev=>{if(ev.key==="Escape")closeSheet()});
-if(typeof module==="undefined")render();
+render();
+})();
 </script>
 </body>
 </html>
