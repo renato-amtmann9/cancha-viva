@@ -83,7 +83,7 @@ main>.wrap{animation:enter .35s ease-out}
 .hd button.lk{color:var(--accent);font-weight:700;font-size:13px}
 .flush>.hd{padding:16px 16px 0}
 .stack{display:flex;flex-direction:column;gap:16px}
-.cols{display:grid;gap:16px}
+.cols{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
 @media(min-width:900px){.cols{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);align-items:start}}
 .muted{color:var(--muted)} .small{font-size:13px}
 .title{font-family:var(--display);font-weight:850;font-stretch:108%;font-size:clamp(26px,5vw,40px);letter-spacing:-.025em;line-height:1.05}
@@ -1092,8 +1092,8 @@ function shareCanvas(m){const c=document.createElement("canvas");c.width=1080;c.
   x.font=F(800,38);x.fillText(LIGA+" · "+d.C.ed,540,96);x.font=F(600,30);x.fillStyle="#C9D1E3";x.fillText("Categoría "+m.cat+" años · Fecha "+(m.f+1)+" · "+(m.status==="final"?"Resultado final":"En vivo"),540,144);
   const shield=(cx,t)=>{const [n,sh,c1,c2]=CLUBS[t];x.save();x.translate(cx-112,250);x.scale(7,7);const pa=new Path2D("M4 3h24v15c0 6-5 10-12 12C9 28 4 24 4 18z");x.fillStyle=c1;x.fill(pa);x.strokeStyle="rgba(255,255,255,.7)";x.lineWidth=.6;x.stroke(pa);x.fillStyle=c2;x.fillRect(4,3,24,5);x.font="800 "+(sh.length>2?8.4:10)+"px Archivo, Arial";x.textAlign="center";x.fillText(sh,16,21);x.restore();
     x.fillStyle="#fff";x.font=F(800,40);const w=n.split(" ");let l1=n,l2="";if(n.length>16){const k=Math.ceil(w.length/2);l1=w.slice(0,k).join(" ");l2=w.slice(k).join(" ")}x.fillText(l1,cx,540);if(l2)x.fillText(l2,cx,588)};
-  shield(230,m.home);shield(850,m.away);
-  x.fillStyle="#fff";x.font=F(900,230);x.fillText(h+" : "+a,540,470);
+  shield(200,m.home);shield(880,m.away);
+  x.fillStyle="#fff";x.font=F(900,190);x.fillText(h+" : "+a,540,455);
   const gs=m.events.filter(e=>e.t==="gol");x.font=F(600,32);x.fillStyle="#E4E9F5";gs.slice(0,6).forEach((e,i)=>{x.fillText(PL(d,e.p).short+" "+e.ml+" ("+CLUBS[e.team][1]+")",540,690+i*46)});
   x.fillStyle="#C6F04A";x.font=F(900,44);x.fillText("canchaviva",540,1000);x.fillStyle="#9DA9C2";x.font=F(600,24);x.fillText("Demo diseñada y programada por Vlic · vlic.cl",540,1040);return c}
 /* panel de la liga */
