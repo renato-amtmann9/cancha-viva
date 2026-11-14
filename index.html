@@ -477,7 +477,7 @@ body.touring main{padding-bottom:250px}
 (function(){"use strict";
 /* ================= DATOS ================= */
 const HALF=40;
-const CLUBS=[
+const CLUBS_VD=[
  ["Juventud Lo Hermida","JLH","#0B6B3A","#FFFFFF"],["Los Cerezos","CER","#B3122F","#FFFFFF"],["Cóndores Andinos","CON","#1C1C1C","#E7C13A"],
  ["Club Deportivo 373","373","#1746A2","#FFFFFF"],["Edson Beyruth","EDB","#F2B705","#14233F"],["Juventud Católico","JCA","#FFFFFF","#1B4FBF"],
  ["Bologna","BOL","#8E1B2C","#14233F"],["Independiente","IND","#D22630","#FFFFFF"],["Nazzareth","NAZ","#4B2A7B","#FFFFFF"],["Unión Las Parcelas","ULP","#2E8B57","#F2D024"],
@@ -485,12 +485,23 @@ const CLUBS=[
  ["Inter de Milán","INT","#1438A6","#111111"],["Halcones de Oro","HAL","#C9A227","#1C1C1C"],["Real Academia","RAC","#FFFFFF","#5B2A86"],
  ["Villa Román","VRO","#C8102E","#F2D024"],["Manchester de Peñalolén","MAN","#6CABDD","#14233F"],["Internacional Quilín","IQU","#D4202C","#FFFFFF"],["Sao Paulo","SAO","#FFFFFF","#C8102E"]
 ];
+const VD=typeof location!=="undefined"&&/[?&]liga=vd/.test(location.search); // variante con los clubes de Viejos Dorados
+const CLUBS_GEN=[
+ ["Unión Los Aromos","ULA","#0B6B3A","#FFFFFF"],["Deportivo El Roble","ROB","#B3122F","#FFFFFF"],["Real Cordillera","RCO","#1C1C1C","#E7C13A"],
+ ["Juventud San Luis","JSL","#1746A2","#FFFFFF"],["Atlético Las Torres","ALT","#F2B705","#14233F"],["Estrella del Sur","EDS","#FFFFFF","#1B4FBF"],
+ ["Los Canelos","CAN","#8E1B2C","#14233F"],["Defensor Quebrada","DQU","#D22630","#FFFFFF"],["Villa Esperanza","VES","#4B2A7B","#FFFFFF"],["Santa Rosa Unido","SRU","#2E8B57","#F2D024"],
+ ["Deportivo La Viña","DLV","#F28C28","#1C1C1C"],["Ferroviarios","FER","#0F7C8C","#FFFFFF"],["Juventud El Alba","JEA","#1C1C1C","#FFFFFF"],
+ ["Nueva Aurora","NAU","#1438A6","#111111"],["Maipo Sport","MSP","#C9A227","#1C1C1C"],["Academia El Peral","AEP","#FFFFFF","#5B2A86"],
+ ["Villa Los Copihues","COP","#C8102E","#F2D024"],["Rayo Oriente","RAY","#6CABDD","#14233F"],["Internacional Las Lomas","ILL","#D4202C","#FFFFFF"],["San Martín FC","SMA","#FFFFFF","#C8102E"]
+];
+const CLUBS=VD?CLUBS_VD:CLUBS_GEN, LIGA=VD?"Liga Viejos Dorados":"Liga Senior Cordillera";
 const GROUPS=[[0,1,2,3,4,5,6,7,8,9],[10,11,12,13,14,15,16,17,18,19]];
-const CLASICOS=[[0,5,"Clásico de las Juventudes"],[1,2,"Clásico del sector alto"],[10,16,"Clásico de las Villas"],[13,17,"Duelo de los europeos"],[12,14,"Clásico de Lo Hermida"]];
-const VENUES=[{n:"Estadio Municipal de Peñalolén",s:"Municipal",c:"Peñalolén, Santiago",d:"Av. Ricardo Grellet de los Reyes 2101"},{n:"Estadio Lo Hermida",s:"Lo Hermida",c:"Peñalolén, Santiago",d:"Sector Lo Hermida"}];
+const CLASICOS=VD?[[0,5,"Clásico de las Juventudes"],[1,2,"Clásico del sector alto"],[10,16,"Clásico de las Villas"],[13,17,"Duelo de los europeos"],[12,14,"Clásico de Lo Hermida"]]:[[0,5,"Clásico del Sur"],[1,2,"Clásico de la Cordillera"],[10,16,"Clásico del Oriente"],[13,17,"Duelo de la Aurora"],[12,14,"Clásico del Maipo"]];
+const VENUES=VD?[{n:"Estadio Municipal de Peñalolén",s:"Municipal",c:"Peñalolén, Santiago",d:"Av. Ricardo Grellet de los Reyes 2101"},{n:"Estadio Lo Hermida",s:"Lo Hermida",c:"Peñalolén, Santiago",d:"Sector Lo Hermida"}]
+  :[{n:"Estadio Municipal",s:"Municipal",c:"Tu comuna, Santiago",d:"Av. Principal 2101"},{n:"Complejo Los Aromos",s:"Los Aromos",c:"Tu comuna, Santiago",d:"Camino Los Aromos 450"}];
 const CHAMPS=[
- {id:"cl26",name:"Liga Viejos Dorados",ed:"Clausura 2026",status:"En curso",cur:5},
- {id:"ap26",name:"Liga Viejos Dorados",ed:"Apertura 2026",status:"Finalizado",cur:8},
+ {id:"cl26",name:LIGA,ed:"Clausura 2026",status:"En curso",cur:5},
+ {id:"ap26",name:LIGA,ed:"Apertura 2026",status:"Finalizado",cur:8},
  {id:"cv27",name:"Copa de Verano",ed:"Enero 2027",status:"Próximamente",off:true}
 ];
 const CATS=[40,50,60], CATC={40:"#3F3AE6",50:"#FF6B4A",60:"#0FA36B"};
@@ -654,7 +665,7 @@ function votes(m){if(m._v)return m._v;const r=rng(hash("v"+m.id)),ds=D(m),k=ds.s
 const BASE=45;
 function myPoints(){let p=BASE,hits=0,n=0;Object.keys(S.pred).forEach(id=>{const m=ALLM[id];if(!m||m.status!=="final")return;const o=outcome(m);
   QS.forEach(q=>{if(S.pred[id][q.k]){n++;if(S.pred[id][q.k]===o[q.k]){p+=q.pts;hits++}}})});return {p,hits,n}}
-const RANK=[["Tío Lucho","Juventud Lo Hermida",140],["Marce_10","Los Cerezos",125],["El Profe Araya","Villa Román",110],["Pato Cóndor","Cóndores Andinos",95],["Dany373","Club Deportivo 373",85],["La Nona","Real Academia",70],["Chino Vega","Bologna",60],["Rodri_INT","Inter de Milán",50],["Don Nelson","Nazzareth",40],["Vale Halcona","Halcones de Oro",30],["Seba Q.","Internacional Quilín",20]];
+const RANK=[["Tío Lucho",0,140],["Marce_10",1,125],["El Profe Araya",16,110],["Pato C.",2,95],["Dany R.",3,85],["La Nona",15,70],["Chino Vega",6,60],["Rodri_9",13,50],["Don Nelson",8,40],["Vale H.",14,30],["Seba Q.",18,20]];
 
 /* ================= ESTADO ================= */
 const S={stack:[{v:"gate"}],mvp:{},chk:{},pay:{},fine:{},trib:{},adm:"res",tour:null,fxg:null,champ:null,cat:null,fav:{},pred:{},grp:0,fecha:null,stat:"gol",mt:{},pside:{},hubCat:0,hubAll:false,asst:null,flash:null};
@@ -800,7 +811,7 @@ function insights(d){const s=ST(d),out=[],all=Object.values(s.T);
   const inv=all.filter(t=>t.l===0&&t.pj>0);if(inv.length)out.push(["Invictos",`${inv.length===1?"Queda un solo invicto":"Siguen invictos"}: <b>${inv.map(t=>esc(cn(t.id))).join(", ")}</b>.`]);
   const sc=topScorers(d)[0];if(sc)out.push(["Goleador",`<b>${esc(sc.p.name)}</b> (${esc(cn(sc.p.club))}) lidera la tabla de goleadores con ${sc.g} goles en ${sc.pj} partidos.`]);
   const va=all.slice().sort((a,b)=>a.ga-b.ga||b.cs-a.cs)[0];out.push(["Valla",`<b>${esc(cn(va.id))}</b> tiene la valla menos batida: ${va.ga} goles en contra y ${va.cs} partidos sin recibir goles.`]);
-  if(d.ms.some(m=>m.status!=="final"))out.push(["Aviso",`La organización informa que los partidos de la fecha ${Math.min(9,d.C.cur+2)} en Lo Hermida se adelantan 30 minutos por mantención de la cancha.`]);
+  if(d.ms.some(m=>m.status!=="final"))out.push(["Aviso",`La organización informa que los partidos de la fecha ${Math.min(9,d.C.cur+2)} en ${VENUES[1].s} se adelantan 30 minutos por mantención de la cancha.`]);
   return out}
 function topScorers(d){const s=ST(d);return Object.keys(s.P).map(id=>({p:PL(d,id),...s.P[id]})).filter(x=>x.g>0).sort((a,b)=>b.g-a.g||a.pj-b.pj||a.p.name.localeCompare(b.p.name))}
 function nextOf(d,t){return d.ms.filter(m=>m.status!=="final"&&(m.home===t||m.away===t)).sort((a,b)=>a.ts-b.ts)[0]}
@@ -916,7 +927,7 @@ function vMatch(){const m=ALLM[cur().mid],st=m.status;
   return `<div class="wrap stack">${stad(m)}
     <div class="seg wide" role="tablist">${tabs.map(([k,l])=>`<button data-a="mtab" data-id="${k}" aria-pressed="${t===k}">${l}</button>`).join("")}</div>${body}
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">${st!=="sched"?`<button class="btn" data-a="share" data-id="${m.id}">${IC.share} Compartir resultado</button>`:""}${st==="final"?`<button class="btn ghost" data-a="acta" data-id="${m.id}">${IC.whistle} Ver acta digital</button>`:`<button class="btn ghost" data-a="panel" data-id="${m.id}">${IC.whistle} Soy el planillero de este partido</button>`}</div></div>`}
-function vRank(){const mp=myPoints(),rows=RANK.map(r=>({n:r[0],c:r[1],p:r[2]})).concat([{n:"Tú",c:favT()!=null?cn(favT()):"Hincha",p:mp.p,you:1}]).sort((a,b)=>b.p-a.p);
+function vRank(){const mp=myPoints(),rows=RANK.map(r=>({n:r[0],c:cn(r[1]),p:r[2]})).concat([{n:"Tú",c:favT()!=null?cn(favT()):"Hincha",p:mp.p,you:1}]).sort((a,b)=>b.p-a.p);
   return `<div class="wrap stack" style="max-width:720px"><div class="cover" style="padding:20px"><h1 style="font-size:clamp(26px,5vw,36px);max-width:none">Ranking de <em>predicciones</em></h1><p>Suma 10 puntos por acertar el ganador y 5 por cada dato extra. La liga puede premiar a los mejores de cada mes.</p>
     <div class="row"><span class="chip live">${IC.trophy} ${mp.p} puntos</span><span class="chip">${mp.hits} aciertos de ${mp.n} en esta sesión</span></div></div>
   <div class="card flush"><div class="hd"><h2>Premio del mes</h2><span class="chip acc">Para el 1° del ranking</span></div><div style="padding:0 16px 14px" class="muted">Una parrillada para cuatro personas. El comercio del barrio pone el premio y aparece frente a toda la liga.</div>${spon(2,"Premio entregado por")}</div>
@@ -928,7 +939,7 @@ function vHub(){const lv=allLive(),c=S.hubCat;
   const f=m=>!c||m.cat===c, L=lv.filter(f);up=up.filter(f);const show=S.hubAll?up:up.slice(0,10);let out="",last="";
   show.forEach(m=>{const l=dayLbl(m.ts,true);if(l!==last){out+=`<div class="daylbl">${l}</div>`;last=l}out+=mrow(m,"hub")});
   return `<div class="wrap stack" style="max-width:780px"><div><h1 class="title" style="font-size:clamp(24px,5vw,32px)">Centro del planillero</h1><p class="lead">Elige el partido que te toca. En los que vienen puedes dejar lista la alineación; en los que están en vivo, registrar cada jugada.</p></div>
-  <div class="hd" style="margin:0;flex-wrap:wrap"><span class="chip acc">Liga Viejos Dorados · Clausura 2026</span><div class="seg">${[[0,"Todas"],[40,"40 años"],[50,"50 años"],[60,"60 años"]].map(([k,l])=>`<button data-a="hubcat" data-id="${k}" aria-pressed="${c===k}">${l}</button>`).join("")}</div></div>
+  <div class="hd" style="margin:0;flex-wrap:wrap"><span class="chip acc">${LIGA} · Clausura 2026</span><div class="seg">${[[0,"Todas"],[40,"40 años"],[50,"50 años"],[60,"60 años"]].map(([k,l])=>`<button data-a="hubcat" data-id="${k}" aria-pressed="${c===k}">${l}</button>`).join("")}</div></div>
   <div class="card flush"><div class="hd"><h2>En vivo ahora</h2><span class="chip live"><span class="dot"></span>${L.length}</span></div>${L.length?L.map(m=>mrow(m,"hub")).join(""):'<div class="empty">No hay partidos en juego en esta categoría.</div>'}</div>
   <div class="card flush"><div class="hd"><h2>Próximos partidos</h2><span class="muted small">${up.length} programados</span></div>${out||'<div class="empty">No quedan partidos programados.</div>'}
     ${up.length>10?`<div class="legend"><button data-a="huball" style="color:var(--accent);font-weight:700">${S.hubAll?"Ver menos":"Ver los "+up.length+" partidos"}</button></div>`:""}</div></div>`}
@@ -1039,7 +1050,7 @@ function vActa(){const m=ALLM[cur().mid],d=D(m),[h,a]=score(m),ac=m.acta,code="A
   const ls=k=>m.events.filter(e=>e.t===k).map(e=>`${e.ml} ${esc(PL(d,e.p).short)} (${CLUBS[e.team][1]})${k==="cam"?" por "+esc(PL(d,e.p2).short):""}`).join(" · ")||"Sin registros";
   const roles=[["h","Capitán de "+cn(m.home),PL(d,lineup(d,m,m.home).xi[5]).name],["a","Capitán de "+cn(m.away),PL(d,lineup(d,m,m.away).xi[5]).name],["r","Árbitro",m.ref]];
   const closed=ac||m.sim;
-  return `<div class="wrap stack" style="max-width:780px"><div class="acta"><div class="ah"><div><h1>Acta oficial del partido</h1><p>Liga Viejos Dorados · ${D(m).C.ed} · Categoría ${m.cat} años</p></div><div style="text-align:right"><p><b>${code}</b></p><p>${cap(DL.format(m.ts))}</p></div></div>
+  return `<div class="wrap stack" style="max-width:780px"><div class="acta"><div class="ah"><div><h1>Acta oficial del partido</h1><p>${LIGA} · ${D(m).C.ed} · Categoría ${m.cat} años</p></div><div style="text-align:right"><p><b>${code}</b></p><p>${cap(DL.format(m.ts))}</p></div></div>
     <div class="res"><div>${crest(m.home,40).replace('class="crest"','class="crest" style="margin:0 auto 6px"')}${esc(cn(m.home))}</div><div class="n">${h} : ${a}</div><div>${crest(m.away,40).replace('class="crest"','class="crest" style="margin:0 auto 6px"')}${esc(cn(m.away))}</div></div>
     <p>${esc(m.venue.n)}, ${esc(m.venue.c)} · Grupo ${"AB"[m.g]} · Fecha ${m.f+1} · Planillero: ${esc(m.plan)}</p>
     <h3>Goles</h3><p>${ls("gol")}</p><h3>Tarjetas amarillas</h3><p>${ls("ama")}</p><h3>Tarjetas rojas</h3><p>${ls("roja")}</p><h3>Cambios</h3><p>${ls("cam")}</p>
@@ -1062,7 +1073,7 @@ function shareCanvas(m){const c=document.createElement("canvas");c.width=1080;c.
   [[0,gl(m.home)],[1080,gla(m)]].forEach(([px,col])=>{const g=x.createRadialGradient(px,0,0,px,0,760);g.addColorStop(0,col);g.addColorStop(1,"rgba(11,18,34,0)");x.globalAlpha=.75;x.fillStyle=g;x.fillRect(0,0,1080,1080);x.globalAlpha=1});
   x.strokeStyle="rgba(255,255,255,.1)";x.lineWidth=3;x.beginPath();x.moveTo(540,0);x.lineTo(540,1080);x.stroke();x.beginPath();x.arc(540,470,210,0,7);x.stroke();
   const F=(w,sz)=>`${w} ${sz}px Archivo, Arial, sans-serif`;x.textAlign="center";x.fillStyle="#fff";
-  x.font=F(800,38);x.fillText("Liga Viejos Dorados · "+d.C.ed,540,96);x.font=F(600,30);x.fillStyle="#C9D1E3";x.fillText("Categoría "+m.cat+" años · Fecha "+(m.f+1)+" · "+(m.status==="final"?"Resultado final":"En vivo"),540,144);
+  x.font=F(800,38);x.fillText(LIGA+" · "+d.C.ed,540,96);x.font=F(600,30);x.fillStyle="#C9D1E3";x.fillText("Categoría "+m.cat+" años · Fecha "+(m.f+1)+" · "+(m.status==="final"?"Resultado final":"En vivo"),540,144);
   const shield=(cx,t)=>{const [n,sh,c1,c2]=CLUBS[t];x.save();x.translate(cx-112,250);x.scale(7,7);const pa=new Path2D("M4 3h24v15c0 6-5 10-12 12C9 28 4 24 4 18z");x.fillStyle=c1;x.fill(pa);x.strokeStyle="rgba(255,255,255,.7)";x.lineWidth=.6;x.stroke(pa);x.fillStyle=c2;x.fillRect(4,3,24,5);x.font="800 "+(sh.length>2?8.4:10)+"px Archivo, Arial";x.textAlign="center";x.fillText(sh,16,21);x.restore();
     x.fillStyle="#fff";x.font=F(800,40);const w=n.split(" ");let l1=n,l2="";if(n.length>16){const k=Math.ceil(w.length/2);l1=w.slice(0,k).join(" ");l2=w.slice(k).join(" ")}x.fillText(l1,cx,540);if(l2)x.fillText(l2,cx,588)};
   shield(230,m.home);shield(850,m.away);
@@ -1073,7 +1084,7 @@ function shareCanvas(m){const c=document.createElement("canvas");c.width=1080;c.
 const REFS=["Ramón Parra","Pedro Cáceres","Fabián Contreras","Hugo Leiva","Nelson Bravo","Iván Garrido"];
 const INF=["Juego brusco grave contra un rival en la disputa del balón.","Reclamos reiterados e insultos al árbitro tras una falta cobrada.","Mano intencional que evitó una ocasión manifiesta de gol."];
 const fmt$=n=>"$"+String(n).replace(/\B(?=(\d{3})+(?!\d))/g,".");
-const payS=c=>S.pay[S.cat+"-"+c]||(c%7===3?"pend":"ok");
+const payS=c=>S.pay[S.cat+"-"+c]||(!VD&&c%7===3?"pend":"ok");
 function tribCases(d){const out=[];d.ms.filter(m=>m.status==="final").sort((a,b)=>b.ts-a.ts).forEach(m=>m.events.forEach(e=>{if(e.t==="roja"&&out.length<6)out.push({id:m.id+"|"+e.p,m,e})}));return out}
 function vAdmin(){const d=ds(),s=ST(d),t=S.adm;let body;
   const up=d.ms.filter(m=>m.status==="sched").sort((a,b)=>a.ts-b.ts).slice(0,8),cases=tribCases(d),pend=[...Array(20).keys()].filter(c=>payS(c)==="pend");
@@ -1093,7 +1104,7 @@ function vAdmin(){const d=ds(),s=ST(d),t=S.adm;let body;
   else if(t==="disc")body=`<div class="card flush"><div class="hd"><h2>Tribunal de disciplina</h2><span class="muted small">Informe del árbitro, sanción y aviso al club</span></div>${cases.length?cases.map((c,i)=>{const p=PL(d,c.e.p),n=S.trib[c.id];return `<div class="arow" style="align-items:flex-start"><span class="nm"><b>${esc(p.name)} · ${esc(cn(c.e.team))}</b><small>Fecha ${c.m.f+1}, minuto ${c.e.ml}. Informe del árbitro ${esc(c.m.ref)}: ${c.e.note?"Segunda tarjeta amarilla.":INF[hash(c.id)%3]}</small></span>${n?`<span class="chip ok">Sancionado: ${n} ${n===1?"fecha":"fechas"} · club notificado</span>`:[1,2,3].map(k=>`<button class="btn ghost" data-a="trib" data-id="${c.id}" data-n="${k}">${k} ${k===1?"fecha":"fechas"}</button>`).join("")}</div>`}).join(""):'<div class="empty">No hay expulsiones por revisar.</div>'}</div>`;
   else body=`<div class="card flush"><div class="hd"><h2>Auspiciadores</h2><span class="chip">Nombres de ejemplo</span></div>${[["Minuto a minuto","Cada partido en vivo"],["Goleadores","Portada de la categoría"],["Premio de predicciones","Ranking de hinchas"],["Figura del partido","Votación de cada partido"],["Equipo ideal","Estadísticas de la fecha"]].map(([a,b],i)=>`<div class="arow"><span class="nm"><b>${a}</b><small>Aparece en: ${b}</small></span><span class="nm" style="min-width:150px"><b style="font-weight:650">${SPONS[i]}</b><small>Auspiciador</small></span><span class="chip ok">Activo</span></div>`).join("")}<div class="note">El comercio del barrio paga por aparecer y la app se financia sola. La liga decide espacios y valores.</div></div>`;
   const tabs=[["res","Resumen"],["prog","Programación"],["arb","Árbitros"],["pagos","Pagos"],["disc","Disciplina"],["spon","Auspiciadores"]];
-  return `<div class="wrap stack"><div class="hd" style="margin:0;flex-wrap:wrap"><div><h1 class="h1">Panel de la liga</h1><div class="muted small">Liga Viejos Dorados · ${d.C.ed}</div></div><div class="seg">${CATS.map(k=>`<button data-a="admcat" data-id="${k}" aria-pressed="${S.cat===k}">${k} años</button>`).join("")}</div></div>
+  return `<div class="wrap stack"><div class="hd" style="margin:0;flex-wrap:wrap"><div><h1 class="h1">Panel de la liga</h1><div class="muted small">${LIGA} · ${d.C.ed}</div></div><div class="seg">${CATS.map(k=>`<button data-a="admcat" data-id="${k}" aria-pressed="${S.cat===k}">${k} años</button>`).join("")}</div></div>
   <div class="seg" style="align-self:flex-start">${tabs.map(([a,b])=>`<button data-a="adm" data-id="${a}" aria-pressed="${t===a}">${b}</button>`).join("")}</div>${body}</div>`}
 /* portada de entrada y cierre */
 const VLEG=`Demo diseñada y programada por <b>Vlic Tecnología SpA</b> · vlic.cl · hola@vlic.cl<br>© 2026 Vlic. Material confidencial y de propiedad exclusiva de Vlic. Se prohíbe copiarlo, venderlo, reproducirlo o usar sus ideas y diseños sin autorización escrita.`;
