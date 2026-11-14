@@ -452,7 +452,7 @@ function DS(champ,cat){
   const ap0=new Date(2026,4,9).getTime(), DAY=864e5, q=x=>Math.ceil(x/3e5)*3e5;
   const ms=[];
   GROUPS.forEach((ids,g)=>{
-    let a=ids.slice();
+    let a=ids.slice();const rot=(cat-40)/10*3;a=a.slice(rot).concat(a.slice(0,rot));if(cat===60)a.reverse();
     for(let f=0;f<9;f++){
       for(let i=0;i<5;i++){
         let h=a[i],w=a[9-i]; if((f+i)%2)[h,w]=[w,h];
@@ -637,7 +637,7 @@ function stad(m,o={}){const [hg,ag]=score(m),s=ST(D(m)),fl=S.flash===m.id?" flas
     foot=`<div class="clk"><b data-clk="${m.id}">${clk(m)}</b>${perLbl(m)}</div>${o.compact&&last?`<div class="last">${evLine(m,last)}</div>`:""}`}
   else if(m.status==="final"){mid=`<div><div class="num">${hg}<span>:</span>${ag}</div></div>`;foot=`<div class="clk" style="color:var(--hero-muted)">Finalizado</div>`}
   else mid=`<div class="vsmid"><div class="cap">${m.ts>Date.now()?"Faltan":"Esperando el pitazo inicial"}</div><div class="cdb" data-cdb="${m.ts}">${cdBoxes(m.ts)}</div></div>`;
-  const info=o.compact?"":`<div class="info3"><div><small>Estadio</small><b>${esc(m.venue.n)}</b><span>${esc(m.venue.d)}</span></div><div><small>Comuna y ciudad</small><b>${esc(m.venue.c)}</b><span>Árbitro: ${esc(m.ref)}</span></div><div><small>${m.status==="sched"?"Hora del partido":"Se jugó"}</small><b>${dayLbl(m.ts)} · ${TF.format(m.ts)}</b><span>Ahora son las <span data-now style="display:inline">${TS.format(Date.now())}</span></span></div></div>`;
+  const info=o.compact?"":`<div class="info3"><div><small>Estadio</small><b>${esc(m.venue.n)}</b><span>${esc(m.venue.d)}</span></div><div><small>Comuna y ciudad</small><b>${esc(m.venue.c)}</b><span>Árbitro: ${esc(m.ref)}</span></div><div><small>${m.status==="sched"?"Hora del partido":m.status==="live"?"Comenzó":"Se jugó"}</small><b>${dayLbl(m.ts)} · ${TF.format(m.ts)}</b><span>Ahora son las <span data-now style="display:inline">${TS.format(Date.now())}</span></span></div></div>`;
   const chip=m.status==="live"?'<span class="chip live"><span class="dot"></span>En vivo</span>':m.status==="final"?'<span class="chip" style="background:rgba(255,255,255,.14);color:#fff">Finalizado</span>':'<span class="chip" style="background:rgba(255,255,255,.14);color:#fff">Programado</span>';
   const tag=o.link?"button":"div";
   return `<${tag} class="stad${fl}" style="--h:${gl(m.home)};--a:${gl(m.away)}" ${o.link?`data-a="match" data-id="${m.id}"`:""}>
@@ -804,8 +804,8 @@ function vMatch(){const m=ALLM[cur().mid],st=m.status;
   let t=S.mt[m.id];if(!tabs.some(x=>x[0]===t))t=tabs[0][0];let body;
   if(t==="previa")body=`<div class="cols"><div class="stack">${secPred(m)}${secForm(m)}${secH2H(m)}</div><div class="stack">${secKey(m)}${secTable(m)}</div></div>`;
   else if(t==="resumen")body=`<div class="cols"><div class="stack"><div class="card flush"><div class="hd"><h2>Minuto a minuto</h2>${st==="live"?'<span class="chip live"><span class="dot"></span>Se actualiza solo</span>':""}</div>${timeline(m)}</div></div><div class="stack">${secStats(m)}${secPred(m)}</div></div>`;
-  else if(t==="xi")body=`<div style="max-width:860px;margin:0 auto">${secXI(m)}</div>`;
-  else body=`<div style="max-width:720px;margin:0 auto">${secStats(m)}</div>`;
+  else if(t==="xi")body=`<div style="width:100%;max-width:860px;margin:0 auto">${secXI(m)}</div>`;
+  else body=`<div style="width:100%;max-width:720px;margin:0 auto">${secStats(m)}</div>`;
   return `<div class="wrap stack">${stad(m)}
     <div class="seg wide" role="tablist">${tabs.map(([k,l])=>`<button data-a="mtab" data-id="${k}" aria-pressed="${t===k}">${l}</button>`).join("")}</div>${body}
     ${st!=="final"?`<button class="btn ghost" style="align-self:center" data-a="panel" data-id="${m.id}">${IC.whistle} Soy el planillero de este partido</button>`:""}</div>`}
