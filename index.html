@@ -465,6 +465,22 @@ body.touring main{padding-bottom:250px}
 .pp i.rt{position:absolute;top:-8px;right:-14px;background:var(--lime);color:#0B1222;border-radius:7px;font-style:normal;font-size:10.5px;font-weight:850;padding:1px 4px}
 @media(max-width:560px){.top .has-ctx .brand span{display:none}}
 @media print{body{background:#fff}.top,.bnav,.wm,#coach,#toasts,.noprint,.legal{display:none!important}main{padding:0}.acta{border:0;box-shadow:none}}
+
+.strip{background:#0B1222;color:#C9D1E3;font-size:11px;font-weight:650;text-align:center;padding:3px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.strip b{color:var(--lime)}
+.duo-sw{display:none}
+@media(max-width:899px){
+  .duo-sw{display:flex}
+  .duo[data-v="pl"] .fanside,.duo[data-v="fan"] .plside{display:none}
+}
+@media(max-width:560px){
+  .stad .sc.pre{grid-template-columns:1fr 1fr;row-gap:16px}
+  .stad .sc.pre .vsmid{grid-column:1/-1;order:3}
+  .seg.wide button{padding:7px 4px;font-size:12.5px}
+  .hm2{display:none}
+  .hd{flex-wrap:wrap}
+  .keys{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -668,7 +684,7 @@ function myPoints(){let p=BASE,hits=0,n=0;Object.keys(S.pred).forEach(id=>{const
 const RANK=[["Tío Lucho",0,140],["Marce_10",1,125],["El Profe Araya",16,110],["Pato C.",2,95],["Dany R.",3,85],["La Nona",15,70],["Chino Vega",6,60],["Rodri_9",13,50],["Don Nelson",8,40],["Vale H.",14,30],["Seba Q.",18,20]];
 
 /* ================= ESTADO ================= */
-const S={stack:[{v:"gate"}],mvp:{},chk:{},pay:{},fine:{},trib:{},adm:"res",tour:null,fxg:null,champ:null,cat:null,fav:{},pred:{},grp:0,fecha:null,stat:"gol",mt:{},pside:{},hubCat:0,hubAll:false,asst:null,flash:null};
+const S={stack:[{v:"gate"}],pview:"pl",mvp:{},chk:{},pay:{},fine:{},trib:{},adm:"res",tour:null,fxg:null,champ:null,cat:null,fav:{},pred:{},grp:0,fecha:null,stat:"gol",mt:{},pside:{},hubCat:0,hubAll:false,asst:null,flash:null};
 try{S.fav=JSON.parse(localStorage.getItem("cv-fav")||"{}");S.pred=JSON.parse(localStorage.getItem("cv-pred")||"{}")}catch(e){}
 const save=()=>{try{localStorage.setItem("cv-fav",JSON.stringify(S.fav));localStorage.setItem("cv-pred",JSON.stringify(S.pred))}catch(e){}};
 const cur=()=>S.stack[S.stack.length-1];
@@ -755,10 +771,10 @@ function stad(m,o={}){const [hg,ag]=score(m),s=ST(D(m)),fl=S.flash===m.id?" flas
   const fx=g?`<div class="goalfx" style="--c:${gl(g.team)}"><div><b>¡GOL!</b><span>${esc(cn(g.team))} · ${esc(PL(D(m),g.p).short)} ${g.ml}</span></div></div>`:"";
   return `<${tag} class="stad${fl}" style="--h:${gl(m.home)};--a:${gla(m)}" ${o.link?`data-a="match" data-id="${m.id}"`:""}>
     <div class="meta">${chip}<span>Categoría ${m.cat} · Grupo ${"AB"[m.g]} · Fecha ${m.f+1}${o.compact?" · "+esc(m.venue.s):""}</span></div>
-    <div class="sc">${tm(m.home)}${mid}${tm(m.away)}</div>${foot}${info}${fx}</${tag}>`}
+    <div class="sc${m.status==="sched"?" pre":""}">${tm(m.home)}${mid}${tm(m.away)}</div>${foot}${info}${fx}</${tag}>`}
 function tableHTML(g,full,hl,dd){const s=ST(dd||ds()),rows=s.groups[g],fv=favT();
-  return `<div class="tw"><table><thead><tr><th>#</th><th class="l">Club</th><th>PJ</th>${full?'<th class="hm">G</th><th class="hm">E</th><th class="hm">P</th><th class="hm">GF</th><th class="hm">GC</th>':""}<th>DG</th><th>Pts</th>${full?'<th>Últimos 5</th>':""}</tr></thead><tbody>
-  ${rows.map(t=>`<tr data-a="team" data-id="${t.id}" class="${hl?(hl.includes(t.id)?"me":"dim"):fv===t.id?"me":""}"><td><span class="pos${t.pos<=4?" q":""}">${t.pos}</span></td><td class="l"><div class="club">${crest(t.id,22)}<span>${esc(cn(t.id))}</span>${t.live?'<span class="chip acc" style="padding:1px 7px">vivo</span>':""}</div></td><td>${t.pj}</td>${full?`<td class="hm">${t.w}</td><td class="hm">${t.d}</td><td class="hm">${t.l}</td><td class="hm">${t.gf}</td><td class="hm">${t.ga}</td>`:""}<td>${t.gf-t.ga>0?"+":""}${t.gf-t.ga}</td><td class="pts">${t.pts}</td>${full?`<td>${form(t.form.slice(-5))}</td>`:""}</tr>`).join("")}
+  return `<div class="tw"><table><thead><tr><th>#</th><th class="l">Club</th><th>PJ</th>${full?'<th class="hm">G</th><th class="hm">E</th><th class="hm">P</th><th class="hm">GF</th><th class="hm">GC</th>':""}<th class="${full?"hm2":""}">DG</th><th>Pts</th>${full?'<th>Últimos 5</th>':""}</tr></thead><tbody>
+  ${rows.map(t=>`<tr data-a="team" data-id="${t.id}" class="${hl?(hl.includes(t.id)?"me":"dim"):fv===t.id?"me":""}"><td><span class="pos${t.pos<=4?" q":""}">${t.pos}</span></td><td class="l"><div class="club">${crest(t.id,22)}<span>${esc(cn(t.id))}</span>${t.live?'<span class="chip acc" style="padding:1px 7px">vivo</span>':""}</div></td><td>${t.pj}</td>${full?`<td class="hm">${t.w}</td><td class="hm">${t.d}</td><td class="hm">${t.l}</td><td class="hm">${t.gf}</td><td class="hm">${t.ga}</td>`:""}<td class="${full?"hm2":""}">${t.gf-t.ga>0?"+":""}${t.gf-t.ga}</td><td class="pts">${t.pts}</td>${full?`<td>${form(t.form.slice(-5))}</td>`:""}</tr>`).join("")}
   </tbody></table></div>`}
 function timeline(m){const d=D(m);if(!m.events.length)return `<div class="empty">Todavía no hay incidencias en este partido.</div>`;
   let h=0,a=0;const rows=[];
@@ -957,7 +973,7 @@ function vPanel(){const m=ALLM[cur().mid],d=D(m);
   const ck=S.chk[m.id]||{},nck=t=>Object.keys(ck).filter(id=>id.split("-")[0]==t).length;
   const luc=t=>`<div class="luc">${crest(t,30)}<div class="nm"><b>${esc(cn(t))}</b><span class="small ${m.conf[t]?"":"muted"}" style="${m.conf[t]?"color:var(--win);font-weight:700":""}">${m.conf[t]?"Alineación confirmada · "+lineup(d,m,t).form.join("-"):"Alineación sin confirmar"} · ${nck(t)}/16 credenciales</span></div><button class="btn ghost" data-a="check" data-team="${t}" title="Escanear credenciales">QR</button><button class="btn ${m.conf[t]?"ghost":"dark"}" data-a="lu" data-team="${t}">${IC.spark}<span class="lbl">${m.conf[t]?"Cambiar":"Dictar"}</span></button></div>`;
   const clip=lastE&&lastE.t==="gol"&&!lastE.clip&&m.status==="live";
-  return `<div class="wrap"><div class="cols"><div class="stack">
+  return `<div class="wrap stack"><div class="seg wide duo-sw">${[["pl","Planillero"],["fan","Lo que ve el hincha"]].map(([k,l])=>`<button data-a="pview" data-id="${k}" aria-pressed="${S.pview===k}">${l}</button>`).join("")}</div><div class="cols duo" data-v="${S.pview}"><div class="stack plside">
     <div class="twoh" style="margin:0">${IC.whistle} Pantalla del planillero</div>
     <div class="card stack"><div class="muted small" style="display:flex;justify-content:space-between;gap:8px"><span>Categoría ${m.cat} · Fecha ${m.f+1}</span><span>${esc(m.venue.s)}</span></div>
       <div class="pan-clock">${m.status==="live"?`<span data-clk="${m.id}">${clk(m)}</span>`:m.status==="final"?"Final":"00:00"}</div>
@@ -967,7 +983,7 @@ function vPanel(){const m=ALLM[cur().mid],d=D(m);
     ${m.status!=="final"?`<div class="card stack"><div class="pan-teams">${team(m.home)}${team(m.away)}</div>
       ${clip?`<button class="btn dark" data-a="p-clip">▶ Adjuntar el video del gol</button>`:""}
       <button class="btn ghost" data-a="p-undo" ${m.status==="live"&&lastE&&!MARK[lastE.t]?"":"disabled"}>Deshacer el último registro</button></div>`:""}
-  </div><div class="stack"><div class="twoh" style="margin:0;justify-content:center"><span class="chip live"><span class="dot"></span>En directo</span> Lo que ve el hincha en su teléfono</div>
+  </div><div class="stack fanside"><div class="twoh" style="margin:0;justify-content:center"><span class="chip live"><span class="dot"></span>En directo</span> Lo que ve el hincha en su teléfono</div>
     <div class="phone" data-t="phone"><div class="pbar">cancha<span style="color:var(--lime)">viva</span></div><div class="scr">${stad(m,{compact:1})}
     ${m.status==="sched"?secXI(m):`<div class="card flush"><div class="hd"><h2>Minuto a minuto</h2></div>${timeline(m)}</div>`}</div></div></div></div></div>`}
 /* asistente de alineación: interpreta el texto del planillero */
@@ -1139,8 +1155,8 @@ const TOUR=[
  {role:"Planillero",t:"Ahora eres el planillero",d:"El planillero ve todos los partidos en vivo y los que vienen, y elige el que le toca. Funciona en celular, tablet o computador.",hl:"main .card",run(){base({v:"hub"})}},
  {role:"Planillero",t:"Control de identidad con QR",d:"Antes del partido escanea la credencial de cada jugador. La app confirma identidad, edad de la categoría y si está suspendido. Se acaban los jugadores fuera de regla.",hl:"main .card",run(){const m=TM(),sq=squad(40,m.home);S.chk[m.id]=S.chk[m.id]||{};sq.slice(0,6).forEach(p=>S.chk[m.id][p.id]=1);base({v:"hub"},{v:"panel",mid:m.id},{v:"check",mid:m.id,team:m.home})}},
  {role:"Planillero",t:"Dicta la alineación y la IA la arma",d:"El planillero escribe la formación con sus palabras, tal como se la dicta el delegado. El asistente entiende el texto y ubica a cada jugador en la cancha.",hl:".pitch",run(){const m=TM(),d=D(m),tx=sampleText(d,m.home);S.asst={text:tx,res:parseLineup(d,m.home,tx)};base({v:"hub"},{v:"panel",mid:m.id},{v:"lineup",mid:m.id,team:m.home})}},
- {role:"Planillero",t:"Dos pantallas: cancha y hincha",d:"A la izquierda, lo que toca el planillero. A la derecha, lo que ve la gente en su teléfono al mismo tiempo. El partido acaba de empezar y el reloj ya corre.",hl:"[data-t=phone]",run(){const m=TM();if(m.status==="sched"&&S.asst&&S.asst.res){m.start=m.start||{};m.start[m.home]=S.asst.res.lu}ensureLive();base({v:"hub"},{v:"panel",mid:m.id})}},
- {role:"Planillero",t:"¡Gol!",d:"El planillero aprieta Gol y elige al jugador. En ese mismo segundo el marcador cambia, salta la notificación y la tabla se actualiza. Acabamos de marcar uno.",hl:"[data-t=phone]",run(){const m=ensureLive(),d=D(m);base({v:"hub"},{v:"panel",mid:m.id});if(m.status==="live"&&m.live.period!=="ET")addEvent(m,"gol",m.home,field(d,m,m.home).on[9])}},
+ {role:"Planillero",t:"Dos pantallas: cancha y hincha",d:"A la izquierda, lo que toca el planillero. A la derecha, lo que ve la gente en su teléfono al mismo tiempo. El partido acaba de empezar y el reloj ya corre.",hl:"[data-t=phone]",run(){const m=TM();if(m.status==="sched"&&S.asst&&S.asst.res){m.start=m.start||{};m.start[m.home]=S.asst.res.lu}ensureLive();S.pview="pl";base({v:"hub"},{v:"panel",mid:m.id})}},
+ {role:"Planillero",t:"¡Gol!",d:"El planillero aprieta Gol y elige al jugador. En ese mismo segundo el marcador cambia, salta la notificación y la tabla se actualiza. Acabamos de marcar uno.",hl:"[data-t=phone]",run(){const m=ensureLive(),d=D(m);base({v:"hub"},{v:"panel",mid:m.id});S.pview="fan";if(m.status==="live"&&m.live.period!=="ET")addEvent(m,"gol",m.home,field(d,m,m.home).on[9])}},
  {role:"Planillero",t:"Tarjetas, cambios y tiempo agregado",d:"Cada registro queda en el minuto a minuto. La doble amarilla genera la roja sola y el jugador queda suspendido automáticamente para la próxima fecha.",hl:"[data-t=phone]",run(){const m=ensureLive(),d=D(m);base({v:"hub"},{v:"panel",mid:m.id});if(m.status==="live"&&m.live.period!=="ET"){if(!m.events.some(e=>e.t==="ama"))addEvent(m,"ama",m.away,field(d,m,m.away).on[3]);if(!m.events.some(e=>e.t==="cam")){const f=field(d,m,m.home);addEvent(m,"cam",m.home,f.bench[0],f.on[7])}}}},
  {role:"Planillero",t:"Final y acta digital",d:"Al terminar, capitanes y árbitro firman con el dedo en la pantalla. El acta queda cerrada, con respaldo, y llega a la liga y a los clubes. Prueba firmar o usa las firmas de ejemplo.",hl:".acta",run(){const m=ensureFinal();base({v:"hub"},{v:"panel",mid:m.id},{v:"acta",mid:m.id})}},
  {role:"Hincha",t:"Puntos y ranking de hinchas",d:"Al cerrar el partido se reparten los puntos de las predicciones. El ranking mantiene a la gente entrando cada semana, y un comercio del barrio puede poner el premio.",hl:".li.you",run(){ensureFinal();base({v:"rank"})}},
@@ -1172,9 +1188,9 @@ function render(scroll){const v=cur(),app=document.getElementById("app");
   else body=({home:vHome,cat:vCat,team:vTeam,player:vPlayer,match:vMatch,panel:vPanel,hub:vHub,lineup:vLineup,rank:vRank,check:vCheck,acta:vActa,admin:vAdmin})[v.v]();
   const C=S.champ&&CHAMPS.find(c=>c.id===S.champ), root=v.v==="main"||v.v==="home", work=["panel","hub","lineup","check","acta","admin"].includes(v.v), ctx=inL&&v.v==="main";
   const left=root?`<button class="brand" data-a="home" aria-label="Cancha Viva, ir al inicio">${IC.logo}<span>cancha<i>viva</i></span></button>`:`<button class="back" data-a="back">${IC.back} Volver</button>`;
-  app.innerHTML=`<header class="top"><div class="wrap${ctx?" has-ctx":""}">${left}
+  app.innerHTML=`<header class="top"><div class="strip">Demo diseñada y programada por <b>Vlic</b> · prohibido su uso o copia sin autorización</div><div class="wrap${ctx?" has-ctx":""}">${left}
     ${ctx?`<button class="ctx" data-a="switch" title="Cambiar campeonato o categoría"><span>${C.ed} <small>· ${S.cat} años</small></span><svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>`:""}
-    <span class="sp"></span>${work?`<span class="chip acc">${v.v==="admin"?"Organización":"Planillero"}</span>`:`<button class="ptsc" data-a="rank" title="Tus puntos de predicción">${IC.trophy}${myPoints().p}</button><button class="btn ic-only" data-a="hub" title="Planillero">${IC.whistle}<span class="lbl">Planillero</span></button><button class="btn ghost ic-only" data-a="admin" title="Organización de la liga">${IC.liga}<span class="lbl">Liga</span></button>`}</div>${nav}</header><main>${body}<div class="wrap">${LEGAL}</div></main>${bn}<div class="wm">Demo <i>Vlic</i> · uso no autorizado prohibido</div>`;
+    <span class="sp"></span>${work?`<span class="chip acc">${v.v==="admin"?"Organización":"Planillero"}</span>`:`<button class="ptsc" data-a="rank" title="Tus puntos de predicción">${IC.trophy}${myPoints().p}</button><button class="btn ic-only" data-a="hub" title="Planillero">${IC.whistle}<span class="lbl">Planillero</span></button><button class="btn ghost ic-only" data-a="admin" title="Organización de la liga">${IC.liga}<span class="lbl">Liga</span></button>`}</div>${nav}</header><main>${body}<div class="wrap">${LEGAL}</div></main>${bn}`;
   S.flash=null;S.fxg=null;coach();
   if(scroll)window.scrollTo(0,0)}
 function tick(){document.querySelectorAll("[data-cd]").forEach(e=>e.textContent=cdTxt(+e.dataset.cd));
@@ -1214,6 +1230,7 @@ const A={
   "tour-x"(){S.tour=null;render()},
   admin(){if(!S.champ||S.champ!=="cl26"){S.champ="cl26";S.cat=S.cat||40}go({v:"admin"})},
   adm(e){S.adm=e.id;render()},
+  pview(e){S.pview=e.id;render()},
   admcat(e){S.cat=+e.id;render()},
   rp(e){const m=ALLM[e.id];document.getElementById("sheet").innerHTML=`<div class="sheet-bg" data-a="s-close"><div class="sheet" role="dialog" aria-label="Reprogramar"><h3>Mover el partido</h3><p>${esc(cn(m.home))} vs ${esc(cn(m.away))} · hoy está para ${dayLbl(m.ts).toLowerCase()} a las ${TF.format(m.ts)}</p>${[[30,"30 minutos más tarde"],[60,"1 hora más tarde"],[1440,"Al día siguiente, misma hora"],[10080,"La próxima semana, misma hora"]].map(([k,l])=>`<button class="li" data-a="rp-do" data-id="${m.id}" data-k="${k}"><span class="nm"><b>${l}</b></span></button>`).join("")}<div style="padding:10px 16px 6px"><button class="btn ghost" style="width:100%" data-a="s-close">Cancelar</button></div></div></div>`},
   "rp-do"(e){const m=ALLM[e.id];m.ts+=+e.k*6e4;m.moved=1;closeSheet();toast("Partido reprogramado",`${esc(cn(m.home))} vs ${esc(cn(m.away))}: ahora ${dayLbl(m.ts).toLowerCase()} a las ${TF.format(m.ts)}. Clubes, árbitro y planillero avisados.`,IC.cal);render()},
